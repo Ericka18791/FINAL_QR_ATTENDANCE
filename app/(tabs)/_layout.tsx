@@ -1,31 +1,77 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
+import { useEffect, useState } from 'react';
 
 import { COLORS } from '@/constants/colors';
+import { useAuth } from '@/lib/auth';
+import { getProfile, type Role } from '@/lib/profiles';
 
 export default function TabLayout() {
+  const { user } = useAuth();
+  const [role, setRole] = useState<Role | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    if (!user?.id) {
+      setRole(null);
+      return;
+    }
+
+    getProfile(user.id)
+      .then((profile) => {
+        if (active) {
+          setRole(profile?.role ?? null);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load user role:', error);
+
+        if (active) {
+          setRole(null);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [user?.id]);
+
+  const isTeacher = role === 'teacher' || role === 'admin';
+  const isAdmin = role === 'admin';
+
   return (
     <Tabs
       screenOptions={{
+        headerShown: false,
+
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.textSecondary,
 
-        headerStyle: {
-          backgroundColor: COLORS.background,
-        },
-
-        headerShadowVisible: false,
-        headerTintColor: COLORS.textPrimary,
-
+        // Floating, glass-like bottom navigation
         tabBarStyle: {
-          backgroundColor: COLORS.card,
-          borderTopWidth: 1,
-          borderTopColor: COLORS.border,
+          position: 'absolute',
+          left: 10,
+          right: 10,
+          bottom: 8,
+
           height: 68,
           paddingTop: 6,
           paddingBottom: 6,
-          elevation: 0,
-          shadowOpacity: 0,
+
+          backgroundColor: 'rgba(255, 255, 255, 0.92)',
+          borderTopWidth: 1,
+          borderTopColor: 'rgba(255, 255, 255, 0.8)',
+          borderRadius: 18,
+
+          elevation: 8,
+          shadowColor: '#000000',
+          shadowOpacity: 0.12,
+          shadowRadius: 12,
+          shadowOffset: {
+            width: 0,
+            height: 4,
+          },
         },
 
         tabBarLabelStyle: {
@@ -38,6 +84,7 @@ export default function TabLayout() {
         },
       }}
     >
+      {/* HOME */}
       <Tabs.Screen
         name="index"
         options={{
@@ -52,6 +99,7 @@ export default function TabLayout() {
         }}
       />
 
+      {/* SCAN */}
       <Tabs.Screen
         name="scan"
         options={{
@@ -66,6 +114,7 @@ export default function TabLayout() {
         }}
       />
 
+      {/* HISTORY */}
       <Tabs.Screen
         name="history"
         options={{
@@ -80,6 +129,7 @@ export default function TabLayout() {
         }}
       />
 
+      {/* PROFILE */}
       <Tabs.Screen
         name="profile"
         options={{
@@ -94,10 +144,12 @@ export default function TabLayout() {
         }}
       />
 
+      {/* TEACHER — visible only to teachers and admins */}
       <Tabs.Screen
         name="teacher"
         options={{
           title: 'Teacher',
+          href: isTeacher ? undefined : null,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? 'clipboard' : 'clipboard-outline'}
@@ -105,6 +157,38 @@ export default function TabLayout() {
               size={24}
             />
           ),
+        }}
+      />
+
+      {/* ADMIN — visible only to admins */}
+      <Tabs.Screen
+        name="admin"
+        options={{
+          title: 'Admin',
+          href: isAdmin ? undefined : null,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? 'shield' : 'shield-outline'}
+              color={color}
+              size={24}
+            />
+          ),
+        }}
+      />
+
+      {/* GALLERY — accessible from the app, but hidden from bottom tabs */}
+      <Tabs.Screen
+        name="gallery"
+        options={{
+          href: null,
+        }}
+      />
+
+      {/* CALENDAR — hidden from bottom tabs */}
+      <Tabs.Screen
+        name="calendar"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

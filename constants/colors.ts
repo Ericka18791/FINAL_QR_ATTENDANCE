@@ -1,15 +1,24 @@
-
 export const COLORS = {
-  primary: '#2E7D5B',
-  background: '#F7F6F2',
+  // Main blue theme
+  primary: '#0A2C5A',
+  primaryDark: '#071D3D',
+
+  // Backgrounds
+  background: '#B9DDF8',
   card: '#FFFFFF',
-  textPrimary: '#14181F',
-  textSecondary: '#5D6B7A',
+  surface: '#E7F3FF',
+
+  // Text
+  textPrimary: '#102744',
+  textSecondary: '#5E7895',
   textOnPrimary: '#FFFFFF',
-  surface: '#EFF3F0',
-  border: '#DADFE3',
-  shadow: '#14181F',
-  warning: '#C97A2B',
-  success: '#2E7D5B',
-  danger: '#B3261E',
+
+  // Borders and shadows
+  border: '#D5E6F7',
+  shadow: '#0A2C5A',
+
+  // Status colors
+  warning: '#E6A23C',
+  success: '#218C78',
+  danger: '#C43D4D',
 } as const;

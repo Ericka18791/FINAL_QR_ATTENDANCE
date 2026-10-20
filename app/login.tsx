@@ -1,4 +1,3 @@
-
 import { Link, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -835,3 +834,5 @@ const styles = StyleSheet.create({
     letterSpacing: 0.15,
   },
 });
+
+
